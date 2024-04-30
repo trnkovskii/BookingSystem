@@ -1,6 +1,6 @@
 ﻿namespace BookingSystem.Models.ViewModels
 {
-    public class CheckStatusReqModel
+    public class CheckStatusReq
     {   
         public string BookingCode { get; set; }
     }

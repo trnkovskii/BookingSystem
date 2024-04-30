@@ -1,10 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BookingSystem.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BookingSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BookController : Controller
+    public class BookController : ControllerBase
     {
+        [HttpPost]
+        public IActionResult Book(BookReq bookReq)
+        {
+            return Ok(bookReq);
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace BookingSystem.Models.ViewModels
 {
-    public class SearchReqModel
+    public class SearchReq
     {
         public string Destination { get; set; }
         public string DepartureAirport { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace BookingSystem.Models.ViewModels
 {
-    public class BookResModel
+    public class BookRes
     {
         public string BookingCode { get; set; }
         public DateTime BookingTime { get; set; }

@@ -2,7 +2,7 @@
 
 namespace BookingSystem.Models.ViewModels
 {
-    public class CheckStatusResModel
+    public class CheckStatusRes
     {
         public BookingStatusEnum Status { get; set; }
     }
