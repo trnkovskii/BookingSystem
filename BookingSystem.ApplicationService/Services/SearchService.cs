@@ -8,7 +8,7 @@ namespace BookingSystem.ApplicationService.Services
     {
         public SearchService() { }
 
-        public static async Task<SearchRes> Search(SearchReq searchReq)
+        public async Task<SearchRes> Search(SearchReq searchReq)
         {
             var serachRes = new SearchRes();
 

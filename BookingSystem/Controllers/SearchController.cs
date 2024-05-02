@@ -10,8 +10,13 @@ namespace BookingSystem.Controllers
     {
         private readonly ISearchService _searchService;
 
+        public SearchController(ISearchService searchService)
+        {
+            _searchService = searchService;
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Search(SearchReq searchReq)
+        public async Task<IActionResult> Search([FromBody] SearchReq searchReq)
         {
             SearchRes result = await _searchService.Search(searchReq);
 
