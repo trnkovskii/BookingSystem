@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BookingSystem.Models\BookingSystem.Models.csproj" />
+    <ProjectReference Include="..\BookingSystem.Storage\BookingSystem.Storage.csproj" />
   </ItemGroup>
 
 </Project>

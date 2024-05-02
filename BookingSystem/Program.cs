@@ -1,5 +1,8 @@
 using BookingSystem.ApplicationService.Interfaces;
 using BookingSystem.ApplicationService.Services;
+using BookingSystem.Models.ViewModels;
+using BookingSystem.Storage;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +10,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddScoped<ISearchService, SearchService>();
-builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped(typeof(IInMemoryStorage<>), typeof(InMemoryStorage<>));
+
+builder.Services.AddScoped<ISearchService>(serviceProvider =>
+{
+    var inMemoryStorage = serviceProvider.GetRequiredService<IInMemoryStorage<SearchRes>>();
+    return new SearchService(inMemoryStorage);
+});
+
+//builder.Services.AddScoped<ISearchService, SearchService>();
+//builder.Services.AddScoped<IBookService, BookService>();
+
+builder.Services.AddScoped<IBookService>(serviceProvider =>
+{
+    var inMemoryStorage = serviceProvider.GetRequiredService<IInMemoryStorage<BookRes>>();
+    return new BookService(inMemoryStorage);
+});
+
 builder.Services.AddScoped<ICheckStatusService, CheckStatusService>();
 
 builder.Services.AddEndpointsApiExplorer();

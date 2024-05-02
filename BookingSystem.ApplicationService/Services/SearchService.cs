@@ -1,26 +1,39 @@
 ﻿using BookingSystem.ApplicationService.Interfaces;
 using BookingSystem.Models.ViewModels;
+using BookingSystem.Storage;
 using Newtonsoft.Json;
 
 namespace BookingSystem.ApplicationService.Services
 {
     public class SearchService : ISearchService
     {
-        public SearchService() { }
+        private readonly IInMemoryStorage<SearchRes> _inMemoryStorage;
+        public SearchService(IInMemoryStorage<SearchRes> inMemoryStorage)
+        {
+            _inMemoryStorage = inMemoryStorage;
+        }
 
         public async Task<SearchRes> Search(SearchReq searchReq)
         {
-            var serachRes = new SearchRes();
+            var searchRes = new SearchRes();
 
             if (string.IsNullOrEmpty(searchReq.DepartureAirport))
             {
                 if (IsLastMinuteHotelsSearch(searchReq.FromDate))
                 {
-                    return await GetHotelsAsync(searchReq, serachRes).ConfigureAwait(false);
+                    searchRes = await GetHotelsAsync(searchReq, searchRes).ConfigureAwait(false);
+
+                    _inMemoryStorage.StoreData(searchRes);
+
+                    return searchRes;
                 }
                 else
                 {
-                    return await GetHotelsAsync(searchReq, serachRes).ConfigureAwait(false);
+                    searchRes = await GetHotelsAsync(searchReq, searchRes).ConfigureAwait(false);
+
+                    _inMemoryStorage.StoreData(searchRes);
+
+                    return searchRes;
                 }
             }
             else
@@ -29,17 +42,19 @@ namespace BookingSystem.ApplicationService.Services
 
                 var options = flights.Concat(hotels).ToArray();
 
-                serachRes.Options = options;
+                searchRes.Options = options;
 
-                return serachRes;
+                _inMemoryStorage.StoreData(searchRes);
+
+                return searchRes;
             }
         }
 
-        private static async Task<SearchRes> GetHotelsAsync(SearchReq searchReq, SearchRes serachRes)
+        private static async Task<SearchRes> GetHotelsAsync(SearchReq searchReq, SearchRes searchRes)
         {
             var hotels = await GetHotels(searchReq.Destination).ConfigureAwait(false);
-            serachRes.Options = hotels;
-            return serachRes;
+            searchRes.Options = hotels;
+            return searchRes;
         }
 
         private static async Task<Option[]> GetHotels(string destinationCode)
