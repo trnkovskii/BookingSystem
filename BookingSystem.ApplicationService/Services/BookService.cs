@@ -1,15 +1,15 @@
 ﻿using BookingSystem.ApplicationService.Interfaces;
 using BookingSystem.Models.ViewModels;
-using BookingSystem.Storage;
+using BookingSystem.Storage.Interfaces;
 
 namespace BookingSystem.ApplicationService.Services
 {
     public class BookService : IBookService
     {
         private readonly Random _random;
-        private readonly IInMemoryStorage<BookRes> _inMemoryStorage;
+        private readonly IInMemoryRepository<BookRes> _inMemoryStorage;
 
-        public BookService(IInMemoryStorage<BookRes> inMemoryStorage)
+        public BookService(IInMemoryRepository<BookRes> inMemoryStorage)
         {
             _inMemoryStorage = inMemoryStorage;
             _random = new Random();

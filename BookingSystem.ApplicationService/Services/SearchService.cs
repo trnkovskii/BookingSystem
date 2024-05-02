@@ -1,14 +1,14 @@
 ﻿using BookingSystem.ApplicationService.Interfaces;
 using BookingSystem.Models.ViewModels;
-using BookingSystem.Storage;
+using BookingSystem.Storage.Interfaces;
 using Newtonsoft.Json;
 
 namespace BookingSystem.ApplicationService.Services
 {
     public class SearchService : ISearchService
     {
-        private readonly IInMemoryStorage<SearchRes> _inMemoryStorage;
-        public SearchService(IInMemoryStorage<SearchRes> inMemoryStorage)
+        private readonly IInMemoryRepository<SearchRes> _inMemoryStorage;
+        public SearchService(IInMemoryRepository<SearchRes> inMemoryStorage)
         {
             _inMemoryStorage = inMemoryStorage;
         }
