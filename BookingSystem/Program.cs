@@ -44,6 +44,4 @@ app.UseEndpoints(routes =>
         "api/{controller=Home}/{action=Index}/{id?}");
 });
 
-//app.MapControllers();
-
 app.Run();
