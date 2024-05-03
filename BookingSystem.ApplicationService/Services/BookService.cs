@@ -7,12 +7,14 @@ namespace BookingSystem.ApplicationService.Services
     public class BookService : IBookService
     {
         private readonly Random _random;
-        private readonly IInMemoryRepository<BookRes> _inMemoryStorage;
+        private readonly IBookRepository _bookRepository;
+        private readonly ISearchRepository _searchRepository;
 
-        public BookService(IInMemoryRepository<BookRes> inMemoryStorage)
+        public BookService(IBookRepository bookRepository, ISearchRepository searchRepository)
         {
-            _inMemoryStorage = inMemoryStorage;
             _random = new Random();
+            _bookRepository = bookRepository;
+            _searchRepository = searchRepository;
         }
 
         public BookRes Book(BookReq bookReq)
@@ -30,11 +32,40 @@ namespace BookingSystem.ApplicationService.Services
                 SleepTime = sleepTime,
             };
 
-            _inMemoryStorage.StoreData(bookRes);
+            _bookRepository.StoreData(bookRes);
+
+            List<SearchRes> options = _searchRepository.GetAllOptions();
+
+            Option option = options.SelectMany(item => item.Options).FirstOrDefault(opt => opt.OptionCode == bookReq.OptionCode);
+
+            if (option != null)
+            {
+                if (!string.IsNullOrEmpty(option.HotelCode))
+                {
+                    BookHotel(option, bookRes);
+                }
+                else
+                {
+                    BookFlight(option, bookRes);
+                }
+            }
 
             return bookRes;
         }
 
+        private void BookHotel(Option option, BookRes bookRes)
+        {
+            bookRes.IsHotelBooked = true;
+            Console.WriteLine($"Hotel with code: {option.HotelCode} is booked!");
+            _bookRepository.UpdateData(bookRes, b => b.BookingCode == bookRes.BookingCode);
+        }
+
+        private void BookFlight(Option option, BookRes bookRes)
+        {
+            bookRes.IsFlightBooked = true;
+            Console.WriteLine($"Flight with code: {option.FlightCode} is booked!");
+            _bookRepository.UpdateData(bookRes, b => b.BookingCode == bookRes.BookingCode);
+        }
         private string GenerateBookingCode()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

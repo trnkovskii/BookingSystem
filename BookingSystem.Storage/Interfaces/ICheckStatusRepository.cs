@@ -2,7 +2,7 @@
 
 namespace BookingSystem.Storage.Interfaces
 {
-    internal interface ICheckStatusRepository : IInMemoryRepository<CheckStatusRes>
+    public interface ICheckStatusRepository : IInMemoryRepository<CheckStatusRes>
     {
     }
 }

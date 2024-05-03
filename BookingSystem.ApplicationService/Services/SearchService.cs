@@ -7,10 +7,10 @@ namespace BookingSystem.ApplicationService.Services
 {
     public class SearchService : ISearchService
     {
-        private readonly IInMemoryRepository<SearchRes> _inMemoryStorage;
-        public SearchService(IInMemoryRepository<SearchRes> inMemoryStorage)
+        private readonly ISearchRepository _searchRepository;
+        public SearchService(ISearchRepository searchRepository)
         {
-            _inMemoryStorage = inMemoryStorage;
+            _searchRepository = searchRepository;
         }
 
         public async Task<SearchRes> Search(SearchReq searchReq)
@@ -23,7 +23,7 @@ namespace BookingSystem.ApplicationService.Services
                 {
                     searchRes = await GetHotelsAsync(searchReq, searchRes).ConfigureAwait(false);
 
-                    _inMemoryStorage.StoreData(searchRes);
+                    _searchRepository.StoreData(searchRes);
 
                     return searchRes;
                 }
@@ -31,7 +31,7 @@ namespace BookingSystem.ApplicationService.Services
                 {
                     searchRes = await GetHotelsAsync(searchReq, searchRes).ConfigureAwait(false);
 
-                    _inMemoryStorage.StoreData(searchRes);
+                    _searchRepository.StoreData(searchRes);
 
                     return searchRes;
                 }
@@ -44,7 +44,7 @@ namespace BookingSystem.ApplicationService.Services
 
                 searchRes.Options = options;
 
-                _inMemoryStorage.StoreData(searchRes);
+                _searchRepository.StoreData(searchRes);
 
                 return searchRes;
             }

@@ -4,5 +4,6 @@ namespace BookingSystem.Storage.Interfaces
 {
     public interface ISearchRepository : IInMemoryRepository<SearchRes>
     {
+        List<SearchRes> GetAllOptions();
     }
 }
