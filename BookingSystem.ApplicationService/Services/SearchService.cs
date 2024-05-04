@@ -1,129 +1,73 @@
 ﻿using BookingSystem.ApplicationService.Interfaces;
 using BookingSystem.Models.ViewModels;
 using BookingSystem.Storage.Interfaces;
-using Newtonsoft.Json;
 
 namespace BookingSystem.ApplicationService.Services
 {
     public class SearchService : ISearchService
     {
         private readonly ISearchRepository _searchRepository;
-        public SearchService(ISearchRepository searchRepository)
+        private readonly IGetSearchDataFromApiService _getSearchDataFromApiService;
+        public SearchService(ISearchRepository searchRepository, IGetSearchDataFromApiService getSearchDataFromApiService)
         {
             _searchRepository = searchRepository;
+            _getSearchDataFromApiService = getSearchDataFromApiService;
         }
 
         public async Task<SearchRes> Search(SearchReq searchReq)
         {
-            var searchRes = new SearchRes();
-
             if (string.IsNullOrEmpty(searchReq.DepartureAirport))
             {
-                if (IsLastMinuteHotelsSearch(searchReq.FromDate))
-                {
-                    searchRes = await GetHotelsAsync(searchReq, searchRes).ConfigureAwait(false);
-
-                    _searchRepository.StoreData(searchRes);
-
-                    return searchRes;
-                }
-                else
-                {
-                    searchRes = await GetHotelsAsync(searchReq, searchRes).ConfigureAwait(false);
-
-                    _searchRepository.StoreData(searchRes);
-
-                    return searchRes;
-                }
+                var result = await SearchHotels(searchReq).ConfigureAwait(false);
+                StoreSearchResults(result);
+                return result;
             }
             else
             {
-                var (flights, hotels) = await GetHotelsAndFlights(searchReq.Destination, searchReq.DepartureAirport);
-
-                var options = flights.Concat(hotels).ToArray();
-
-                searchRes.Options = options;
-
-                _searchRepository.StoreData(searchRes);
-
-                return searchRes;
+                var result = await SearchFlightsAndHotels(searchReq);
+                StoreSearchResults(result);
+                return result;
             }
         }
 
-        private static async Task<SearchRes> GetHotelsAsync(SearchReq searchReq, SearchRes searchRes)
+        private async Task<SearchRes> SearchFlightsAndHotels(SearchReq searchReq)
         {
-            var hotels = await GetHotels(searchReq.Destination).ConfigureAwait(false);
-            searchRes.Options = hotels;
-            return searchRes;
+            return await GetFlightsAndHotelsAsync(searchReq.Destination, searchReq.DepartureAirport);
         }
 
-        private static async Task<Option[]> GetHotels(string destinationCode)
+        private async Task<SearchRes> SearchHotels(SearchReq searchReq)
         {
-            using HttpClient client = new();
-
-            try
+            if (IsLastMinuteHotelsSearch(searchReq.FromDate))
             {
-                string apiUrl = $"https://tripx-test-functions.azurewebsites.net/api/SearchHotels?destinationCode={destinationCode}";
-
-                HttpResponseMessage response = await client.GetAsync(apiUrl);
-
-                Option[] hotels = Array.Empty<Option>();
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseData = await response.Content.ReadAsStringAsync();
-                    hotels = JsonConvert.DeserializeObject<Option[]>(responseData);
-                }
-
-                return hotels;
+                return new SearchRes { Options = await _getSearchDataFromApiService.GetHotels(searchReq.Destination).ConfigureAwait(false) };
             }
-            catch (Exception)
+            else
             {
-                throw;
+                return new SearchRes { Options = await _getSearchDataFromApiService.GetHotels(searchReq.Destination).ConfigureAwait(false) };
             }
         }
 
-        private static async Task<Option[]> GetFlights(string departureAirport, string arrivalAirport)
+        private async Task<SearchRes> GetFlightsAndHotelsAsync(string destinationCode, string departureAirport)
         {
-            using HttpClient client = new();
+            string arrivalAirport = destinationCode;
 
-            try
-            {
-                string apiUrl = $"https://tripx-test-functions.azurewebsites.net/api/SearchFlights?departureAirport={departureAirport}&arrivalAirport={arrivalAirport}";
+            var flights = await _getSearchDataFromApiService.GetFlights(departureAirport, arrivalAirport);
+            var hotels = await _getSearchDataFromApiService.GetHotels(destinationCode);
 
-                HttpResponseMessage response = await client.GetAsync(apiUrl);
+            var options = flights.Concat(hotels).ToArray();
 
-                Option[] flights = Array.Empty<Option>();
+            return new SearchRes { Options = options };
+        }
 
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseData = await response.Content.ReadAsStringAsync();
-                    flights = JsonConvert.DeserializeObject<Option[]>(responseData);
-                }
-
-                return flights;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+        private void StoreSearchResults(SearchRes searchRes)
+        {
+            _searchRepository.StoreData(searchRes);
         }
 
         private static bool IsLastMinuteHotelsSearch(DateTime fromDate)
         {
-            var for45Days = DateTime.Today.AddDays(45);
-            return fromDate <= for45Days;
-        }
-
-        private static async Task<(Option[] Flights, Option[] Hotels)> GetHotelsAndFlights(string destinationCode, string departureAirport)
-        {
-            string arrivalAirport = destinationCode;
-
-            var hotels = await GetHotels(destinationCode);
-
-            var flights = await GetFlights(departureAirport, arrivalAirport);
-
-            return (flights, hotels);
+            var in45Days = DateTime.Today.AddDays(45);
+            return fromDate <= in45Days;
         }
     }
 }
