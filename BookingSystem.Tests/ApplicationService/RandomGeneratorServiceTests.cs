@@ -1,5 +1,4 @@
-﻿using BookingSystem.ApplicationService.Interfaces;
-using BookingSystem.ApplicationService.Services;
+﻿using BookingSystem.ApplicationService.Services;
 
 namespace BookingSystem.Tests.ApplicationService
 {
