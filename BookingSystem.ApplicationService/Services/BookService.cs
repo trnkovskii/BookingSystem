@@ -66,6 +66,7 @@ namespace BookingSystem.ApplicationService.Services
         private void BookHotel(Option option, BookRes bookRes)
         {
             bookRes.IsHotelBooked = true;
+            bookRes.IsLastMinuteReservation = option.IsLastMinuteReservation;
             _bookRepository.UpdateData(bookRes, b => b.BookingCode == bookRes.BookingCode);
             Console.WriteLine($"Hotel with code: {option.HotelCode} is booked!");
         }

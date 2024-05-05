@@ -14,14 +14,14 @@ namespace BookingSystem.ApplicationService.Services
             _configuration = configuration;
         }
 
-        public async Task<Option[]> GetHotels(string destinationCode)
+        public async Task<Option[]> GetHotels(string destinationCode, bool isLastMinute = false)
         {
             string apiUrl = _configuration["HotelsAPI"];
 
             var urlBuilder = new StringBuilder(apiUrl);
             urlBuilder.Append(destinationCode);
 
-            return await GetDataFromAPI(urlBuilder.ToString());
+            return await GetDataFromAPI(urlBuilder.ToString(), isLastMinute);
         }
 
         public async Task<Option[]> GetFlights(string departureAirport, string arrivalAirport)
@@ -36,7 +36,7 @@ namespace BookingSystem.ApplicationService.Services
             return await GetDataFromAPI(urlBuilder.ToString());
         }
 
-        private static async Task<Option[]> GetDataFromAPI(string apiUrl)
+        private static async Task<Option[]> GetDataFromAPI(string apiUrl, bool isLastMinute = false)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace BookingSystem.ApplicationService.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await DeserializeData(response);
+                    return await DeserializeData(response, isLastMinute);
                 }
 
                 return Array.Empty<Option>();
@@ -57,11 +57,19 @@ namespace BookingSystem.ApplicationService.Services
             }
         }
 
-        private static async Task<Option[]> DeserializeData(HttpResponseMessage response)
+        private static async Task<Option[]> DeserializeData(HttpResponseMessage response, bool isLastMinute = false)
         {
             string responseData = await response.Content.ReadAsStringAsync();
 
             Option[] options = JsonConvert.DeserializeObject<Option[]>(responseData);
+
+            if (isLastMinute)
+            {
+                foreach (var item in options)
+                {
+                    item.IsLastMinuteReservation = true;
+                }
+            }
 
             return options;
         }

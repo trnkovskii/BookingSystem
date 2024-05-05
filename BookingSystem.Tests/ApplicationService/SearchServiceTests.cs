@@ -46,7 +46,8 @@ namespace BookingSystem.Tests.ApplicationService
                             HotelId = 0,
                             HotelName = null,
                             HotelDestinationCode = null,
-                            HotelCity = null
+                            HotelCity = null,
+                            IsLastMinuteReservation = false,
                         }
                   };
 
@@ -64,7 +65,8 @@ namespace BookingSystem.Tests.ApplicationService
                             HotelId = 0,
                             HotelName = "Alexandar Square Boutique Hotel",
                             HotelDestinationCode = null,
-                            HotelCity = null
+                            HotelCity = null,
+                            IsLastMinuteReservation = false,
                         }
                   };
 
@@ -73,7 +75,7 @@ namespace BookingSystem.Tests.ApplicationService
                 Options = flightOptions.Concat(hotelOptions).ToArray()
             };
 
-            _getSearchDataFromApiServiceMock.Setup(x => x.GetHotels(searchReq.Destination)).ReturnsAsync(hotelOptions);
+            _getSearchDataFromApiServiceMock.Setup(x => x.GetHotels(searchReq.Destination, false)).ReturnsAsync(hotelOptions);
             _getSearchDataFromApiServiceMock.Setup(x => x.GetFlights(searchReq.DepartureAirport, searchReq.Destination)).ReturnsAsync(flightOptions);
 
             _searchRepositoryMock.Setup(x => x.StoreData(searchRes));
@@ -83,7 +85,7 @@ namespace BookingSystem.Tests.ApplicationService
             Assert.IsNotNull(result);
             CollectionAssert.AreEquivalent(searchRes.Options, result.Options);
 
-            _getSearchDataFromApiServiceMock.Verify(x => x.GetHotels(searchReq.Destination), Times.Once);
+            _getSearchDataFromApiServiceMock.Verify(x => x.GetHotels(searchReq.Destination, false), Times.Once);
             _getSearchDataFromApiServiceMock.Verify(x => x.GetFlights(searchReq.DepartureAirport, searchReq.Destination), Times.Once);
         }
 
@@ -111,7 +113,8 @@ namespace BookingSystem.Tests.ApplicationService
                     HotelId = 0,
                     HotelName = "Alexandar Square Boutique Hotel",
                     HotelDestinationCode = null,
-                    HotelCity = null
+                    HotelCity = null,
+                    IsLastMinuteReservation = true
                 }
             };
 
@@ -120,7 +123,7 @@ namespace BookingSystem.Tests.ApplicationService
                 Options = hotelOptions
             };
 
-            _getSearchDataFromApiServiceMock.Setup(x => x.GetHotels(searchReq.Destination)).ReturnsAsync(hotelOptions);
+            _getSearchDataFromApiServiceMock.Setup(x => x.GetHotels(searchReq.Destination, true)).ReturnsAsync(hotelOptions);
             _searchRepositoryMock.Setup(x => x.StoreData(searchRes));
 
             var result = await _searchService.Search(searchReq);
@@ -128,7 +131,7 @@ namespace BookingSystem.Tests.ApplicationService
             Assert.IsNotNull(result);
             CollectionAssert.AreEquivalent(searchRes.Options, result.Options);
 
-            _getSearchDataFromApiServiceMock.Verify(x => x.GetHotels(searchReq.Destination), Times.Once);
+            _getSearchDataFromApiServiceMock.Verify(x => x.GetHotels(searchReq.Destination, true), Times.Once);
         }
 
         [TestMethod]
@@ -155,7 +158,8 @@ namespace BookingSystem.Tests.ApplicationService
                     HotelId = 0,
                     HotelName = "Alexandar Square Boutique Hotel",
                     HotelDestinationCode = null,
-                    HotelCity = null
+                    HotelCity = null,
+                    IsLastMinuteReservation = false,
                 }
             };
 
@@ -164,7 +168,7 @@ namespace BookingSystem.Tests.ApplicationService
                 Options = hotelOptions
             };
 
-            _getSearchDataFromApiServiceMock.Setup(x => x.GetHotels(searchReq.Destination)).ReturnsAsync(hotelOptions);
+            _getSearchDataFromApiServiceMock.Setup(x => x.GetHotels(searchReq.Destination, false)).ReturnsAsync(hotelOptions);
             _searchRepositoryMock.Setup(x => x.StoreData(searchRes));
 
             var result = await _searchService.Search(searchReq);
@@ -172,7 +176,7 @@ namespace BookingSystem.Tests.ApplicationService
             Assert.IsNotNull(result);
             CollectionAssert.AreEquivalent(searchRes.Options, result.Options);
 
-            _getSearchDataFromApiServiceMock.Verify(x => x.GetHotels(searchReq.Destination), Times.Once);
+            _getSearchDataFromApiServiceMock.Verify(x => x.GetHotels(searchReq.Destination, false), Times.Once);
         }
     }
 }

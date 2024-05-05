@@ -16,7 +16,7 @@ namespace BookingSystem.ApplicationService.Services
             }
             else
             {
-                if (bookingRes.IsHotelBooked || bookingRes.IsFlightBooked)
+                if ((bookingRes.IsHotelBooked || bookingRes.IsFlightBooked) && !bookingRes.IsLastMinuteReservation)
                 {
                     return BookingStatusEnum.Success;
                 }

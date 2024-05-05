@@ -20,6 +20,7 @@
         public string HotelName { get; set; }
         public string HotelDestinationCode { get; set; }
         public string HotelCity { get; set; }
+        public bool IsLastMinuteReservation { get; set; } = false;
 
         private static string GenerateOptionCode()
         {

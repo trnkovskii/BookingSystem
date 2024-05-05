@@ -39,7 +39,7 @@ namespace BookingSystem.ApplicationService.Services
         {
             if (IsLastMinuteHotelsSearch(searchReq.FromDate))
             {
-                return new SearchRes { Options = await _getSearchDataFromApiService.GetHotels(searchReq.Destination).ConfigureAwait(false) };
+                return new SearchRes { Options = await _getSearchDataFromApiService.GetHotels(searchReq.Destination, true).ConfigureAwait(false) };
             }
             else
             {
