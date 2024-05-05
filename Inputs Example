@@ -1,0 +1,88 @@
+Booking Hotels and Flights:
+
+**I worked with Swagger and here are my inputs:**
+
+1. To book only Last Minute Hotel:
+
+-for search request:
+{
+  "destination": "SKP",
+  "fromDate": "2024-05-05T21:15:34.431Z",
+  "toDate": "2024-05-05T21:15:34.431Z"
+}
+
+-for book request:
+{
+  "optionCode": "cScqGG", //optionCode is copied from the response of the search
+  "searchReq": {
+    "destination": "SKP",
+    "fromDate": "2024-05-05T21:17:48.857Z",
+    "toDate": "2024-05-05T21:17:48.857Z"
+  }
+}
+
+-for check status I am using the bookCode // bookCode is copied from the response of the booking
+
+
+2. To book only Hotel:
+
+-for search request:
+{
+  "destination": "SKP",
+  "fromDate": "2025-05-05T21:23:11.767Z",
+  "toDate": "2025-07-05T21:23:11.767Z"
+}
+
+-for book request:
+{
+  "optionCode": "oX2J8q", //optionCode is copied from the response of the search
+  "searchReq": {
+    "destination": "SKP",
+    "fromDate": "2025-05-05T21:23:11.767Z",
+    "toDate": "2025-07-05T21:23:11.767Z"
+  }
+}
+
+-for check status I am using the bookCode // bookCode is copied from the response of the booking
+
+4. To book Hotel and Flights:
+
+-for search request:
+{
+  "destination": "SKP",
+  "departureAirport": "OSL",
+  "fromDate": "2024-05-05T21:29:24.807Z",
+  "toDate": "2024-05-05T21:29:24.807Z"
+}
+
+-for book request:
+
+**Booking of Flight and Hotel is different only in the optionCode 
+(you need to call the API separately for hotel and for flight**
+
+	-flight:
+	{
+	  "optionCode": "DbQ5GJ",  //optionCode is copied from the response of the search
+	  "searchReq": {
+		  "destination": "SKP",
+		  "departureAirport": "OSL",
+		  "fromDate": "2024-05-05T21:29:24.807Z",
+		  "toDate": "2024-05-05T21:29:24.807Z"
+	  }
+	}
+
+
+-for check status I am using the bookCode // bookCode is copied from the response of the booking
+
+	-hotel:
+	{
+	  "optionCode": "qXJ9NU",  //optionCode is copied from the response of the search
+	  "searchReq": {
+		  "destination": "SKP",
+		  "departureAirport": "OSL",
+		  "fromDate": "2024-05-05T21:29:24.807Z",
+		  "toDate": "2024-05-05T21:29:24.807Z"
+	  }
+	}
+
+-for check status I am using the bookCode // bookCode is copied from the response of the booking
