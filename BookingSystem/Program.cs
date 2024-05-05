@@ -1,7 +1,10 @@
+using BookingSystem.ApplicationService.FluentValidation;
 using BookingSystem.ApplicationService.Interfaces;
 using BookingSystem.ApplicationService.Services;
+using BookingSystem.Models.ViewModels;
 using BookingSystem.Storage.Interfaces;
 using BookingSystem.Storage.Repositories;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +19,10 @@ builder.Services.AddSingleton(typeof(IInMemoryRepository<>), typeof(InMemoryRepo
 builder.Services.AddSingleton<ISearchRepository, SearchRepository>();
 builder.Services.AddSingleton<IBookRepository, BookRepository>();
 builder.Services.AddSingleton<ICheckStatusRepository, CheckStatusRepository>();
+
+builder.Services.AddTransient<IValidator<SearchReq>, SearchReqValidator>();
+builder.Services.AddTransient<IValidator<BookReq>, BookReqValidator>();
+builder.Services.AddTransient<IValidator<CheckStatusReq>, CheckStatusReqValidator>();
 
 builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IGetSearchDataFromApiService, GetSearchDataFromApiService>();
