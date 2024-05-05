@@ -20,6 +20,7 @@ builder.Services.AddSingleton<ICheckStatusRepository, CheckStatusRepository>();
 builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IGetSearchDataFromApiService, GetSearchDataFromApiService>();
 builder.Services.AddScoped<IRandomGeneratorService, RandomGeneratorService>();
+builder.Services.AddScoped<IBookingStatusDeterminer, BookingStatusDeterminer>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ICheckStatusService, CheckStatusService>();
 

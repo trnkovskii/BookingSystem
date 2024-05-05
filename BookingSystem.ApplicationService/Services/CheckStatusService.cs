@@ -7,43 +7,23 @@ namespace BookingSystem.ApplicationService.Services
     public class CheckStatusService : ICheckStatusService
     {
         private readonly IBookRepository _bookRepository;
-        public CheckStatusService(IBookRepository bookRepository)
+        private readonly IBookingStatusDeterminer _bookingStatusDeterminer;
+        public CheckStatusService(IBookRepository bookRepository, IBookingStatusDeterminer bookingStatusDeterminer)
         {
             _bookRepository = bookRepository;
+            _bookingStatusDeterminer = bookingStatusDeterminer;
         }
 
         public CheckStatusRes CheckStatus(CheckStatusReq checkStatusReq)
         {
             var bookingRes = _bookRepository.GetByBookingCode(checkStatusReq.BookingCode);
-            var checkStatusResult = new CheckStatusRes();
 
             if (bookingRes == null)
             {
-                checkStatusResult.Status = Common.Enums.BookingStatusEnum.Failed;
-                return checkStatusResult;
+                return new CheckStatusRes { Status = Common.Enums.BookingStatusEnum.Failed };
             }
 
-            var expectedTimeToComplete = bookingRes.BookingTime.AddSeconds(bookingRes.SleepTime);
-
-            if (DateTime.Now < expectedTimeToComplete)
-            {
-                checkStatusResult.Status = Common.Enums.BookingStatusEnum.Pending;
-                return checkStatusResult;
-            }
-            else
-            {
-                if (bookingRes.IsHotelBooked || bookingRes.IsFlightBooked)
-                {
-                    checkStatusResult.Status = Common.Enums.BookingStatusEnum.Success;
-                    return checkStatusResult;
-                }
-                else
-                {
-                    checkStatusResult.Status = Common.Enums.BookingStatusEnum.Failed;
-                    return checkStatusResult;
-                }
-            }
+            return new CheckStatusRes { Status = _bookingStatusDeterminer.DetermineStatus(bookingRes) };
         }
-
     }
 }
