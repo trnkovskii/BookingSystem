@@ -9,7 +9,7 @@
             OptionCode = GenerateOptionCode();
         }
 
-        public string OptionCode { get; private set; }
+        public string OptionCode { get; set; }
         public string FlightCode { get; set; }
         public string FlightNumber { get; set; }
         public string ArrivalAirport { get; set; }
