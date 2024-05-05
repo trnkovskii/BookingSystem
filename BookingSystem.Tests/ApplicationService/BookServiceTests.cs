@@ -12,7 +12,7 @@ namespace BookingSystem.Tests.ApplicationService
         private Mock<IBookRepository> _bookRepositoryMock;
         private Mock<ISearchRepository> _searchRepositoryMock;
         private Mock<IRandomGeneratorService> _randomGeneratorServiceMock;
-        private IBookService _bookService;
+        private BookService _bookService;
 
         [TestInitialize]
         public void BookServiceTestsInitialize()
