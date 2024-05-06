@@ -2,6 +2,9 @@ Booking Hotels and Flights:
 
 **I worked with Swagger and here are my inputs:**
 
+**Authorization**
+-For authorization please use "ValidUser"
+
 1. To book only Last Minute Hotel:
 
 -for search request:
