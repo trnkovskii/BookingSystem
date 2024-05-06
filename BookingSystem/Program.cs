@@ -4,11 +4,12 @@ using BookingSystem.ApplicationService.Services;
 using BookingSystem.Models.ViewModels;
 using BookingSystem.Storage.Interfaces;
 using BookingSystem.Storage.Repositories;
+using BookingSystem.WebAPI.Middleware;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 var serviceProvider = builder.Services.BuildServiceProvider();
 var configuration = serviceProvider.GetService<IConfiguration>();
@@ -19,11 +20,9 @@ builder.Services.AddSingleton(typeof(IInMemoryRepository<>), typeof(InMemoryRepo
 builder.Services.AddSingleton<ISearchRepository, SearchRepository>();
 builder.Services.AddSingleton<IBookRepository, BookRepository>();
 builder.Services.AddSingleton<ICheckStatusRepository, CheckStatusRepository>();
-
 builder.Services.AddTransient<IValidator<SearchReq>, SearchReqValidator>();
 builder.Services.AddTransient<IValidator<BookReq>, BookReqValidator>();
 builder.Services.AddTransient<IValidator<CheckStatusReq>, CheckStatusReqValidator>();
-
 builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IGetSearchDataFromApiService, GetSearchDataFromApiService>();
 builder.Services.AddScoped<IRandomGeneratorService, RandomGeneratorService>();
@@ -32,22 +31,58 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ICheckStatusService, CheckStatusService>();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Booking System", Version = "v1" });
+
+    c.AddSecurityDefinition("apiKey", new OpenApiSecurityScheme
+    {
+        Description = "API Key",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "apiKey"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+});
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+       .AddCookie(options =>
+       {
+           options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+           options.SlidingExpiration = true;
+           options.AccessDeniedPath = "/Home/Forbidden";
+       });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Booking System");
+});
+
+app.UseMiddleware<HeaderAuthorizationMiddleware>();
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
+app.UseAuthentication();
 app.UseRouting();
+app.UseAuthorization();
 
 app.UseEndpoints(routes =>
 {
