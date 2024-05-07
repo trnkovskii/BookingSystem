@@ -21,18 +21,25 @@ namespace BookingSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Book(BookReq bookReq)
         {
-            var validationResult = await _bookReqValidator.ValidateAsync(bookReq);
-
-            if (!validationResult.IsValid)
+            try
             {
-                var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage);
-                return BadRequest(errorMessages);
+                var validationResult = await _bookReqValidator.ValidateAsync(bookReq);
+
+                if (!validationResult.IsValid)
+                {
+                    var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage);
+                    return BadRequest(errorMessages);
+                }
+
+                // this method call can be async if we use a real database in the future
+                var bookRes = _bookService.Book(bookReq);
+
+                return Ok(bookRes);
             }
-
-            // this method call can be async if we use a real database in the future
-            var bookRes = _bookService.Book(bookReq);
-
-            return Ok(bookRes);
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

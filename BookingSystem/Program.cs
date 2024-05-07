@@ -77,12 +77,13 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Booking System");
 });
 
-app.UseMiddleware<HeaderAuthorizationMiddleware>();
 
+app.UseMiddleware<HeaderAuthorizationMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseEndpoints(routes =>
 {

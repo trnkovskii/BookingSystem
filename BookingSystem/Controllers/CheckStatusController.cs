@@ -21,23 +21,30 @@ namespace BookingSystem.Controllers
         [HttpGet("{bookingCode}")]
         public async Task<IActionResult> CheckStatus(string bookingCode)
         {
-            CheckStatusReq statusReq = new()
+            try
             {
-                BookingCode = bookingCode
-            };
+                CheckStatusReq statusReq = new()
+                {
+                    BookingCode = bookingCode
+                };
 
-            var validationResult = await _checkStatusReqValidator.ValidateAsync(statusReq);
+                var validationResult = await _checkStatusReqValidator.ValidateAsync(statusReq);
 
-            if (!validationResult.IsValid)
-            {
-                var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage);
-                return BadRequest(errorMessages);
+                if (!validationResult.IsValid)
+                {
+                    var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage);
+                    return BadRequest(errorMessages);
+                }
+
+                // this method call can be async if we use a real database in the future
+                var result = _checkStatusService.CheckStatus(statusReq);
+
+                return Ok(result);
             }
-
-            // this method call can be async if we use a real database in the future
-            var result = _checkStatusService.CheckStatus(statusReq);
-
-            return Ok(result);
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

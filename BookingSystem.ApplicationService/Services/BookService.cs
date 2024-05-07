@@ -19,26 +19,33 @@ namespace BookingSystem.ApplicationService.Services
 
         public BookRes Book(BookReq bookReq)
         {
-            string bookingCode = _randomGeneratorService.GenerateUniqueCode();
-
-            int sleepTime = _randomGeneratorService.GenerateRandomTimeBetween30And60();
-
-            DateTime bookingTime = DateTime.Now;
-
-            var bookRes = new BookRes
+            try
             {
-                BookingCode = bookingCode,
-                BookingTime = bookingTime,
-                SleepTime = sleepTime,
-            };
+                string bookingCode = _randomGeneratorService.GenerateUniqueCode();
 
-            _bookRepository.StoreData(bookRes);
+                int sleepTime = _randomGeneratorService.GenerateRandomTimeBetween30And60();
 
-            Option option = FindSelectedOption(bookReq);
+                DateTime bookingTime = DateTime.Now;
 
-            BookHotelOrFlight(bookRes, option);
+                var bookRes = new BookRes
+                {
+                    BookingCode = bookingCode,
+                    BookingTime = bookingTime,
+                    SleepTime = sleepTime,
+                };
 
-            return bookRes;
+                _bookRepository.StoreData(bookRes);
+
+                Option option = FindSelectedOption(bookReq);
+
+                BookHotelOrFlight(bookRes, option);
+
+                return bookRes;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private void BookHotelOrFlight(BookRes bookRes, Option option)

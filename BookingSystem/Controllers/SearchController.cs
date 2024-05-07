@@ -21,17 +21,23 @@ namespace BookingSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Search(SearchReq searchReq)
         {
-            var validationResult = await _searchReqValidator.ValidateAsync(searchReq);
-
-            if (!validationResult.IsValid)
+            try
             {
-                var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage);
-                return BadRequest(errorMessages);
+                var validationResult = await _searchReqValidator.ValidateAsync(searchReq);
+
+                if (!validationResult.IsValid)
+                {
+                    var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage);
+                    return BadRequest(errorMessages);
+                }
+
+                SearchRes result = await _searchService.Search(searchReq);
+                return Ok(result);
             }
-
-            SearchRes result = await _searchService.Search(searchReq);
-
-            return Ok(result);
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

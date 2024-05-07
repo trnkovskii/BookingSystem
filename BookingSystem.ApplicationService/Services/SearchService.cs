@@ -16,17 +16,24 @@ namespace BookingSystem.ApplicationService.Services
 
         public async Task<SearchRes> Search(SearchReq searchReq)
         {
-            if (string.IsNullOrEmpty(searchReq.DepartureAirport))
+            try
             {
-                var result = await SearchHotels(searchReq).ConfigureAwait(false);
-                StoreSearchResults(result);
-                return result;
+                if (string.IsNullOrEmpty(searchReq.DepartureAirport))
+                {
+                    var result = await SearchHotels(searchReq).ConfigureAwait(false);
+                    StoreSearchResults(result);
+                    return result;
+                }
+                else
+                {
+                    var result = await SearchFlightsAndHotels(searchReq);
+                    StoreSearchResults(result);
+                    return result;
+                }
             }
-            else
+            catch (Exception)
             {
-                var result = await SearchFlightsAndHotels(searchReq);
-                StoreSearchResults(result);
-                return result;
+                throw;
             }
         }
 

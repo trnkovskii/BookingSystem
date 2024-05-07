@@ -16,14 +16,21 @@ namespace BookingSystem.ApplicationService.Services
 
         public CheckStatusRes CheckStatus(CheckStatusReq checkStatusReq)
         {
-            var bookingRes = _bookRepository.GetByBookingCode(checkStatusReq.BookingCode);
-
-            if (bookingRes == null)
+            try
             {
-                return new CheckStatusRes { Status = Common.Enums.BookingStatusEnum.Failed };
-            }
+                var bookingRes = _bookRepository.GetByBookingCode(checkStatusReq.BookingCode);
 
-            return new CheckStatusRes { Status = _bookingStatusDeterminer.DetermineStatus(bookingRes) };
+                if (bookingRes == null)
+                {
+                    return new CheckStatusRes { Status = Common.Enums.BookingStatusEnum.Failed };
+                }
+
+                return new CheckStatusRes { Status = _bookingStatusDeterminer.DetermineStatus(bookingRes) };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
