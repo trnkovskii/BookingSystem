@@ -1,13 +1,13 @@
-using BookingSystem.ApplicationService.FluentValidation;
 using BookingSystem.ApplicationService.Interfaces;
 using BookingSystem.ApplicationService.Services;
 using BookingSystem.Models.ViewModels;
 using BookingSystem.Storage.Interfaces;
 using BookingSystem.Storage.Repositories;
 using BookingSystem.WebAPI.Middleware;
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.OpenApi.Models;
+using BookingSystem.Models.FluentValidation;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +19,6 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton(typeof(IInMemoryRepository<>), typeof(InMemoryRepository<>));
 builder.Services.AddSingleton<ISearchRepository, SearchRepository>();
 builder.Services.AddSingleton<IBookRepository, BookRepository>();
-builder.Services.AddSingleton<ICheckStatusRepository, CheckStatusRepository>();
 builder.Services.AddTransient<IValidator<SearchReq>, SearchReqValidator>();
 builder.Services.AddTransient<IValidator<BookReq>, BookReqValidator>();
 builder.Services.AddTransient<IValidator<CheckStatusReq>, CheckStatusReqValidator>();

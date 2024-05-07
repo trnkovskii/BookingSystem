@@ -20,13 +20,13 @@ namespace BookingSystem.ApplicationService.Services
             {
                 if (string.IsNullOrEmpty(searchReq.DepartureAirport))
                 {
-                    var result = await SearchHotels(searchReq).ConfigureAwait(false);
+                    var result = await GetHotels(searchReq).ConfigureAwait(false);
                     StoreSearchResults(result);
                     return result;
                 }
                 else
                 {
-                    var result = await SearchFlightsAndHotels(searchReq);
+                    var result = await GetFlightsAndHotels(searchReq.Destination, searchReq.DepartureAirport);
                     StoreSearchResults(result);
                     return result;
                 }
@@ -37,12 +37,7 @@ namespace BookingSystem.ApplicationService.Services
             }
         }
 
-        private async Task<SearchRes> SearchFlightsAndHotels(SearchReq searchReq)
-        {
-            return await GetFlightsAndHotelsAsync(searchReq.Destination, searchReq.DepartureAirport);
-        }
-
-        private async Task<SearchRes> SearchHotels(SearchReq searchReq)
+        private async Task<SearchRes> GetHotels(SearchReq searchReq)
         {
             if (IsLastMinuteHotelsSearch(searchReq.FromDate))
             {
@@ -54,7 +49,7 @@ namespace BookingSystem.ApplicationService.Services
             }
         }
 
-        private async Task<SearchRes> GetFlightsAndHotelsAsync(string destinationCode, string departureAirport)
+        private async Task<SearchRes> GetFlightsAndHotels(string destinationCode, string departureAirport)
         {
             string arrivalAirport = destinationCode;
 

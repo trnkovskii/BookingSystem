@@ -1,6 +1,5 @@
 ﻿using BookingSystem.Models.ViewModels;
 using BookingSystem.Storage.Interfaces;
-using System.Collections.Generic;
 
 namespace BookingSystem.Storage.Repositories
 {

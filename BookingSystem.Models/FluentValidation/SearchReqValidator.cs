@@ -1,7 +1,7 @@
 ﻿using BookingSystem.Models.ViewModels;
 using FluentValidation;
 
-namespace BookingSystem.ApplicationService.FluentValidation
+namespace BookingSystem.Models.FluentValidation
 {
     public class SearchReqValidator : AbstractValidator<SearchReq>
     {

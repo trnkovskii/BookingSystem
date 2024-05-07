@@ -1,4 +1,4 @@
-﻿using BookingSystem.ApplicationService.FluentValidation;
+﻿using BookingSystem.Models.FluentValidation;
 using BookingSystem.ApplicationService.Interfaces;
 using BookingSystem.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
